@@ -1,5 +1,4 @@
 import java.util.ArrayList;
-import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.TreeMap;
@@ -62,7 +61,6 @@ public class Servicios {
             }
             
             // Estructura para el servicio 3 (TreeMap)
-
             //hice un treemap con lista por si se repite la prioridad y no perder el anterior
             if (!this.paquetesPorPrioridad.containsKey(p.getNivelDeUrgencia())) {
                 this.paquetesPorPrioridad.put(p.getNivelDeUrgencia(), new ArrayList<>());

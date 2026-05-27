@@ -17,5 +17,8 @@ public class Main {
         }
 
         System.out.println("\nPaquetes cargados: " + paquetes.size());
+        for (Paquete paq : paquetes) {
+            System.out.println("Codigo: " + paq.getCodigoIdentificador() + " | Contiene Alimento: " + paq.isContieneAlimentos());
+        }
     }
 }
