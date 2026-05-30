@@ -41,6 +41,10 @@ public class Servicios {
 
     //Expresar la complejidad temporal del servicio 3.
     public List<Paquete> servicio3(int urgenciaMinima, int urgenciaMaxima){
+        List<Paquete> resultado = new ArrayList<>();
+        
+
+        return resultado;
     }
 
     private void cargarPaquetes(String pathPaquetes) {
