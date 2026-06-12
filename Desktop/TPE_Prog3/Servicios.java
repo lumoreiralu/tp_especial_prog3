@@ -6,7 +6,8 @@ import java.util.TreeMap;
 public class Servicios {
     //Completar con las estructuras y métodos privados que se requieran.
     private HashMap<String, Paquete> paquetes;
-    private List<Paquete> paquetesQueContienenAlimento;
+    private List<Paquete> paquetesQueContienenAlimentos;
+    private List<Paquete> paquetesQueNoContienenAlimentos;
     private TreeMap<Integer, List<Paquete>> paquetesPorPrioridad;
 
     //Expresar la complejidad temporal del constructor.
@@ -21,7 +22,8 @@ public class Servicios {
         //para servicio 1
         this.paquetes = new HashMap<>();
         //para servicio 2
-        this.paquetesQueContienenAlimento = new ArrayList<Paquete>();
+        this.paquetesQueContienenAlimentos = new ArrayList<Paquete>();
+        this.paquetesQueNoContienenAlimentos = new ArrayList<Paquete>();
         //para servicio 3
         this.paquetesPorPrioridad = new TreeMap<>();
 
@@ -37,13 +39,23 @@ public class Servicios {
 
     //Expresar la complejidad temporal del servicio 2.
     public List<Paquete> servicio2(boolean contieneAlimentos) {
+        if(contieneAlimentos){
+            return paquetesQueContienenAlimentos;
+        }
+        else{
+            return paquetesQueNoContienenAlimentos;
+        }
     }
 
     //Expresar la complejidad temporal del servicio 3.
     public List<Paquete> servicio3(int urgenciaMinima, int urgenciaMaxima){
         List<Paquete> resultado = new ArrayList<>();
-        
 
+        //subMap() devuelve un mapa que contiene las entradas con claves entre urgenciaMaxima y urgenciaMinima
+        //se agregan las listas de paquetes de cada prioridad dentro del rango a la lista resultado
+        for(List<Paquete> paquetes : paquetesPorPrioridad.subMap(urgenciaMinima, true, urgenciaMaxima, true).values()){
+            resultado.addAll(paquetes);
+        }
         return resultado;
     }
 
@@ -61,7 +73,10 @@ public class Servicios {
             
             // Estructura para el servicio 2 (List)
             if (p.isContieneAlimentos()) {
-                this.paquetesQueContienenAlimento.add(p);
+                this.paquetesQueContienenAlimentos.add(p);
+            }
+            else{
+                this.paquetesQueNoContienenAlimentos.add(p);
             }
             
             // Estructura para el servicio 3 (TreeMap)
