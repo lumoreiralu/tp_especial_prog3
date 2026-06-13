@@ -1,4 +1,5 @@
-public class Paquete {
+
+public class Paquete{
    private int id; 
    private String codigoIdentificador;
    private int peso;
@@ -68,7 +69,6 @@ public class Paquete {
    public void setNivelDeUrgencia(int nivelDeUrgencia) {
     this.nivelDeUrgencia = nivelDeUrgencia;
    }
-
    
    
 }

@@ -9,6 +9,7 @@ public class Servicios {
     private List<Paquete> paquetesQueContienenAlimentos;
     private List<Paquete> paquetesQueNoContienenAlimentos;
     private TreeMap<Integer, List<Paquete>> paquetesPorPrioridad;
+    private List<Camion> camiones;
 
     //Expresar la complejidad temporal del constructor.
 
@@ -29,15 +30,18 @@ public class Servicios {
 
 
         this.cargarPaquetes(pathPaquetes);
+
+        LectorCamion lectorCamion = new LectorCamion();
+        this.camiones = lectorCamion.leerArchivo(pathCamiones);
     }
 
-    //Expresar la complejidad temporal del servicio 1.
+    //Servicio 1: O(1) ya que el método get() de un HashMap tiene acceso directo constante.
     public Paquete servicio1(String codigoPaquete) {
         return paquetes.get(codigoPaquete);
 
      }
 
-    //Expresar la complejidad temporal del servicio 2.
+    //Servicio 2: O(1), ya que solo implica un if y el retorno de la referencia a una lista ya construida.
     public List<Paquete> servicio2(boolean contieneAlimentos) {
         if(contieneAlimentos){
             return paquetesQueContienenAlimentos;
@@ -47,7 +51,10 @@ public class Servicios {
         }
     }
 
-    //Expresar la complejidad temporal del servicio 3.
+    //Servicio 3: O(logP+K) (logaritmico + iteracion).
+    //Donde P es la cantidad de prioridades distintas guardadas en el árbol 
+    //(costo del subMap para ubicar el rango) y K es la cantidad total de paquetes que caen 
+    // dentro de ese rango y deben ser copiados a la lista resultado.
     public List<Paquete> servicio3(int urgenciaMinima, int urgenciaMaxima){
         List<Paquete> resultado = new ArrayList<>();
 
@@ -87,4 +94,66 @@ public class Servicios {
             this.paquetesPorPrioridad.get(p.getNivelDeUrgencia()).add(p);
         }
     }
+
+    //la estrategia greedy es priorizar los paquetes de mayor peso, 
+    //se ordenan los paquetes por peso descendente y se asignan a camiones refrigados
+    //solo los que contienen alimentos y los que no van a 
+    //a los camiones normales y luego si es necesario a los refrigerados. en cada iteracion tomamos el mejor 
+    //paquete disponible. 
+
+    public void solucionGreedy(){
+        // unimos todos los paquetes
+        List<Paquete> todosLosPaquetes = new ArrayList<>();
+        todosLosPaquetes.addAll(paquetesQueContienenAlimentos);
+        todosLosPaquetes.addAll(paquetesQueNoContienenAlimentos);
+        
+        //los ordenamos
+        todosLosPaquetes.sort((p1, p2) -> Integer.compare(p2.getPeso(), p1.getPeso()));    
+        
+        int pesoNoAsignado = 0;
+        int candidatosConsiderados = 0;
+        for(Paquete p: todosLosPaquetes){
+            candidatosConsiderados++;
+            boolean asignado = false;
+            if(p.isContieneAlimentos()){
+                for(Camion c: camiones){
+                    if(c.isEstaRefrigerado()&&p.getPeso()<=c.getCapacidadMaxima()){
+                        c.setCapacidadMaxima(c.getCapacidadMaxima()-p.getPeso());
+                        c.asignarPaquete(p);
+                        asignado=true;
+                        break;
+                    }
+                }
+            } else {
+                for(Camion c: camiones){
+                    if(!c.isEstaRefrigerado()&&p.getPeso()<=c.getCapacidadMaxima()){
+                        c.setCapacidadMaxima(c.getCapacidadMaxima()-p.getPeso());
+                        c.asignarPaquete(p);
+                        asignado=true;
+                        break;
+                    }
+                }
+            }
+            if(!asignado){
+                for(Camion c: camiones){
+                    if(c.isEstaRefrigerado()&&p.getPeso()<=c.getCapacidadMaxima()){
+                        c.setCapacidadMaxima(c.getCapacidadMaxima()-p.getPeso());
+                        c.asignarPaquete(p);
+                        asignado=true;
+                        break;
+                    }
+                }
+            }
+            if(!asignado){
+                pesoNoAsignado+=p.getPeso();
+            }
+        }
+        System.out.println("Greedy Solución obtenida:");
+        for(Camion c : camiones) {
+            System.out.println(c.toString());
+        }
+        System.out.println("Peso no asignado: " + pesoNoAsignado + " kg.");
+        System.out.println("Métrica para analizar el costo de la solución (cantidad de candidatos considerados): " + candidatosConsiderados);
+        
+    }     
 }
