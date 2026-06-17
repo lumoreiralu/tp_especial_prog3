@@ -102,13 +102,7 @@ public class Servicios {
     //paquete disponible. 
 
     public void solucionGreedy(){
-        // unimos todos los paquetes
-        List<Paquete> todosLosPaquetes = new ArrayList<>();
-        todosLosPaquetes.addAll(paquetesQueContienenAlimentos);
-        todosLosPaquetes.addAll(paquetesQueNoContienenAlimentos);
-        
-        //los ordenamos
-        todosLosPaquetes.sort((p1, p2) -> Integer.compare(p2.getPeso(), p1.getPeso()));    
+;       List<Paquete> todosLosPaquetes = getPaquetesOrdenadosDesc();
         
         int pesoNoAsignado = 0;
         int candidatosConsiderados = 0;
@@ -163,10 +157,7 @@ public class Servicios {
 
     public void obtenerMejorSolucionBacktracking(){
 
-        List<Paquete> listadoDePaquetes = new ArrayList<>();
-        listadoDePaquetes.addAll(paquetesQueContienenAlimentos);
-        listadoDePaquetes.addAll(paquetesQueNoContienenAlimentos);
-        listadoDePaquetes.sort((p1, p2) -> Integer.compare(p2.getPeso(), p1.getPeso()));
+        List<Paquete> listadoDePaquetes = getPaquetesOrdenadosDesc();
 
 
         Resultado mejorSolucion = new Resultado(new ArrayList<>(), Integer.MAX_VALUE);
@@ -229,5 +220,16 @@ public class Servicios {
         }
         solucionBacktracking(index+1, mejorSolucion, listadoDePaquetes, pesoNoAsignado + paqueteActual.getPeso());
         return mejorSolucion;
+    }
+
+    public List<Paquete> getPaquetesOrdenadosDesc(){
+                // unimos todos los paquetes
+                List<Paquete> todosLosPaquetes = new ArrayList<>();
+                todosLosPaquetes.addAll(paquetesQueContienenAlimentos);
+                todosLosPaquetes.addAll(paquetesQueNoContienenAlimentos);
+                
+                //los ordenamos
+                todosLosPaquetes.sort((p1, p2) -> Integer.compare(p2.getPeso(), p1.getPeso()));
+                return todosLosPaquetes;
     }
 }
