@@ -30,6 +30,12 @@ public class Camion{
         this.paquetesAsignados.add(paquete);
     }
 
+    public void eliminarUltimoPaqueteAsignado(){
+        if(!paquetesAsignados.isEmpty()){
+            this.paquetesAsignados.remove(paquetesAsignados.size() - 1);
+        }
+    }
+
     public void setId(int id) {
         this.id = id;
     }
@@ -56,6 +62,10 @@ public class Camion{
 
     public void setCapacidadMaxima(int capacidadMaxima) {
         this.capacidadMaxima = capacidadMaxima;
+    }
+
+    public List<Paquete> getPaquetesAsignados() {
+        return paquetesAsignados;
     }
 
     @Override

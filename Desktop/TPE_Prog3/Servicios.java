@@ -154,6 +154,80 @@ public class Servicios {
         }
         System.out.println("Peso no asignado: " + pesoNoAsignado + " kg.");
         System.out.println("Métrica para analizar el costo de la solución (cantidad de candidatos considerados): " + candidatosConsiderados);
-        
     }     
+
+    //la estrategia backtracking es probar todas las combinaciones posibles de asignación de paquetes a camiones.
+    //se ordenan los paquetes por peso descendente y los que tengan alimentos solamente se asignan a camiones refrigerados.
+    //si no se puede asignar un paquete a ningun camion, se suma su peso al peso no asignado y se pasa al siguiente paquete.
+    //Resultado contiene la asignacion de paquetes a camiones junto su peso no asignado y la cantidad de estados generados al terminar el algoritmo.
+
+    public void obtenerMejorSolucionBacktracking(){
+
+        List<Paquete> listadoDePaquetes = new ArrayList<>();
+        listadoDePaquetes.addAll(paquetesQueContienenAlimentos);
+        listadoDePaquetes.addAll(paquetesQueNoContienenAlimentos);
+        listadoDePaquetes.sort((p1, p2) -> Integer.compare(p2.getPeso(), p1.getPeso()));
+
+
+        Resultado mejorSolucion = new Resultado(new ArrayList<>(), Integer.MAX_VALUE);
+        Resultado resultadoFinal = solucionBacktracking(0, mejorSolucion, listadoDePaquetes, 0);
+
+        System.out.println("Backtracking Solución obtenida:");
+        for(Camion c : resultadoFinal.getCamiones()) {
+            System.out.println(c.toString());
+        }
+        System.out.println("Peso no asignado: " + resultadoFinal.getPesoNoAsignado() + " kg.");
+        System.out.println("Métrica para analizar el costo de la solución (cantidad de estados generados): " + resultadoFinal.getCantidadEstadosGenerados());
+    }
+
+
+    public Resultado solucionBacktracking(int index, Resultado mejorSolucion, List<Paquete> listadoDePaquetes, int pesoNoAsignado){
+        mejorSolucion.setCantidadEstadosGenerados(mejorSolucion.getCantidadEstadosGenerados() + 1);
+
+        if(index == listadoDePaquetes.size()){
+            if(pesoNoAsignado < mejorSolucion.getPesoNoAsignado()){
+                List<Camion> camionesCopia = new ArrayList<>();
+                for(Camion c : camiones){
+                    Camion cCopia = new Camion(c.getId(), c.getPatente(), c.isEstaRefrigerado(), c.getCapacidadMaxima());
+                    for(Paquete p : c.getPaquetesAsignados()){
+                        cCopia.asignarPaquete(p);
+                    }
+                    camionesCopia.add(cCopia);
+                }
+                mejorSolucion.setCamiones(camionesCopia);
+                mejorSolucion.setPesoNoAsignado(pesoNoAsignado);
+            }
+            return mejorSolucion;
+        }
+
+        if(pesoNoAsignado >= mejorSolucion.getPesoNoAsignado()){
+            return mejorSolucion;
+        }
+
+        Paquete paqueteActual = listadoDePaquetes.get(index);
+        for(Camion c: camiones){
+            if(paqueteActual.getPeso() <= c.getCapacidadMaxima()){
+                if(paqueteActual.isContieneAlimentos()){
+                    if(c.isEstaRefrigerado()){
+                        c.asignarPaquete(paqueteActual);
+                        c.setCapacidadMaxima(c.getCapacidadMaxima() - paqueteActual.getPeso());
+                        solucionBacktracking(index+1, mejorSolucion, listadoDePaquetes, pesoNoAsignado);
+
+                        c.eliminarUltimoPaqueteAsignado();
+                        c.setCapacidadMaxima(c.getCapacidadMaxima() + paqueteActual.getPeso());
+                    }
+                }
+                else{
+                    c.asignarPaquete(paqueteActual);
+                    c.setCapacidadMaxima(c.getCapacidadMaxima() - paqueteActual.getPeso());
+                    solucionBacktracking(index+1, mejorSolucion, listadoDePaquetes, pesoNoAsignado);
+
+                    c.eliminarUltimoPaqueteAsignado();
+                    c.setCapacidadMaxima(c.getCapacidadMaxima() + paqueteActual.getPeso());
+                }
+            }
+        }
+        solucionBacktracking(index+1, mejorSolucion, listadoDePaquetes, pesoNoAsignado + paqueteActual.getPeso());
+        return mejorSolucion;
+    }
 }
