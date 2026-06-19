@@ -106,49 +106,50 @@ public class Servicios {
         
         int pesoNoAsignado = 0;
         int candidatosConsiderados = 0;
-        for(Paquete p: todosLosPaquetes){
+        for (Paquete p : todosLosPaquetes) {
             candidatosConsiderados++;
             boolean asignado = false;
-            if(p.isContieneAlimentos()){
-                for(Camion c: camiones){
-                    if(c.isEstaRefrigerado()&&p.getPeso()<=c.getCapacidadMaxima()){
-                        c.setCapacidadMaxima(c.getCapacidadMaxima()-p.getPeso());
-                        c.asignarPaquete(p);
-                        asignado=true;
-                        break;
-                    }
-                }
+            
+            if (p.isContieneAlimentos()) {
+                // el paquete contiene alimento, va a camion refrigerado
+                asignado = intentarAsignar(p, true); 
             } else {
-                for(Camion c: camiones){
-                    if(!c.isEstaRefrigerado()&&p.getPeso()<=c.getCapacidadMaxima()){
-                        c.setCapacidadMaxima(c.getCapacidadMaxima()-p.getPeso());
-                        c.asignarPaquete(p);
-                        asignado=true;
-                        break;
-                    }
-                }
+                // el paquete no contiene alimentos, va a camion sin refrigerar
+                asignado = intentarAsignar(p, false); 
             }
-            if(!asignado){
-                for(Camion c: camiones){
-                    if(c.isEstaRefrigerado()&&p.getPeso()<=c.getCapacidadMaxima()){
-                        c.setCapacidadMaxima(c.getCapacidadMaxima()-p.getPeso());
-                        c.asignarPaquete(p);
-                        asignado=true;
-                        break;
-                    }
-                }
+            
+            // si no encontro lugar, va a un camion disponible
+            if (!asignado) {
+                asignado = intentarAsignar(p, true);
             }
-            if(!asignado){
-                pesoNoAsignado+=p.getPeso();
+            //si no hay mas lugar, se suma el peso que no fue asignado a un camion
+            if (!asignado) {
+                pesoNoAsignado += p.getPeso();
             }
         }
+        
+        imprimirResultados(pesoNoAsignado, candidatosConsiderados);
+    }     
+
+    private boolean intentarAsignar(Paquete p, boolean requiereRefrigerado) {
+        for (Camion c : camiones) {
+            if (c.isEstaRefrigerado() == requiereRefrigerado && p.getPeso() <= c.getCapacidadMaxima()) {
+                c.setCapacidadMaxima(c.getCapacidadMaxima() - p.getPeso());
+                c.asignarPaquete(p);
+                return true; // si se encontro un camion para asignar el paquete
+            }
+        }
+        return false; // si no se encontró ningún camión que cumpla
+    }
+
+    private void imprimirResultados(int pesoNoAsignado, int candidatosConsiderados) {
         System.out.println("Greedy Solución obtenida:");
-        for(Camion c : camiones) {
+        for (Camion c : camiones) {
             System.out.println(c.toString());
         }
         System.out.println("Peso no asignado: " + pesoNoAsignado + " kg.");
-        System.out.println("Métrica para analizar el costo de la solución (cantidad de candidatos considerados): " + candidatosConsiderados);
-    }     
+        System.out.println("Métrica para analizar el costo de la solución: " + candidatosConsiderados);
+    }
 
     //la estrategia backtracking es probar todas las combinaciones posibles de asignación de paquetes a camiones.
     //se ordenan los paquetes por peso descendente y los que tengan alimentos solamente se asignan a camiones refrigerados.
