@@ -20,7 +20,7 @@ public class Main {
             System.out.println("Codigo: " + paq.getCodigoIdentificador() + " | Contiene Alimento: " + paq.isContieneAlimentos());
         }*/
         
-            // 1. Definimos las rutas a tus archivos CSV
+            // Definimos las rutas a tus archivos CSV
             String pathCamiones = "Camion.csv";
             String pathPaquetes = "Paquete.csv";
     
@@ -29,11 +29,12 @@ public class Main {
             Servicios servicios = new Servicios(pathCamiones, pathPaquetes);
 
     
-            System.out.println("\n========================================");
+            
             System.out.println("   PROBANDO ALGORITMO GREEDY");
-            System.out.println("========================================");
+            
             
             servicios.solucionGreedy(); 
+            servicios.obtenerMejorSolucionBacktracking();
             
 
     }
