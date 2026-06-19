@@ -11,7 +11,6 @@ public abstract class LectorCSV<T> {
     public List<T> leerArchivo(String ruta) {
         List<T> listaResultado = new ArrayList<>();
         Path path = Paths.get(ruta);
-
         try (BufferedReader br = Files.newBufferedReader(path)) {
             
 
@@ -38,6 +37,7 @@ public abstract class LectorCSV<T> {
             }
 
         } catch (IOException e) {
+            e.printStackTrace();
             System.err.println("Error al leer el archivo: " + e.getMessage());
         } catch (NumberFormatException e) {
             System.err.println("Error de formato numérico: " + e.getMessage());

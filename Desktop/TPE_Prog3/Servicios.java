@@ -101,7 +101,7 @@ public class Servicios {
     //a los camiones normales y luego si es necesario a los refrigerados. en cada iteracion tomamos el mejor 
     //paquete disponible. 
 
-    public void solucionGreedy(){
+        public void solucionGreedy(){
 ;       List<Paquete> todosLosPaquetes = getPaquetesOrdenadosDesc();
         
         int pesoNoAsignado = 0;
@@ -148,14 +148,18 @@ public class Servicios {
             System.out.println(c.toString());
         }
         System.out.println("Peso no asignado: " + pesoNoAsignado + " kg.");
-        System.out.println("Métrica para analizar el costo de la solución: " + candidatosConsiderados);
-    }
+
+        System.out.println("Métrica para analizar el costo de la solución (cantidad de candidatos considerados): " + candidatosConsiderados);
+    }    
+
 
     //la estrategia backtracking es probar todas las combinaciones posibles de asignación de paquetes a camiones.
     //se ordenan los paquetes por peso descendente y los que tengan alimentos solamente se asignan a camiones refrigerados.
     //si no se puede asignar un paquete a ningun camion, se suma su peso al peso no asignado y se pasa al siguiente paquete.
     //Resultado contiene la asignacion de paquetes a camiones junto su peso no asignado y la cantidad de estados generados al terminar el algoritmo.
 
+    //consideracion: para que se pueda realizar correctamente el backtracking hay que comentar el greedy
+    //si no, el backtracking parte de la asignacion realizada por greedy
     public void obtenerMejorSolucionBacktracking(){
 
         List<Paquete> listadoDePaquetes = getPaquetesOrdenadosDesc();
@@ -173,9 +177,11 @@ public class Servicios {
     }
 
 
-    public Resultado solucionBacktracking(int index, Resultado mejorSolucion, List<Paquete> listadoDePaquetes, int pesoNoAsignado){
+    private Resultado solucionBacktracking(int index, Resultado mejorSolucion, List<Paquete> listadoDePaquetes, int pesoNoAsignado){
+        //cuenta el estado
         mejorSolucion.setCantidadEstadosGenerados(mejorSolucion.getCantidadEstadosGenerados() + 1);
 
+        //si ya se consideraron todos los paquetes se compara la solucion parcial con la mejor y queda la mejor
         if(index == listadoDePaquetes.size()){
             if(pesoNoAsignado < mejorSolucion.getPesoNoAsignado()){
                 List<Camion> camionesCopia = new ArrayList<>();
@@ -192,20 +198,22 @@ public class Servicios {
             return mejorSolucion;
         }
 
+        //si estamos en una rama con solucion parcial peor que la mejor encontrada, se poda
         if(pesoNoAsignado >= mejorSolucion.getPesoNoAsignado()){
             return mejorSolucion;
         }
 
+        //se toma el paquete actual y se intenta asignar a cada camion disponible si se cumplen las condiciones
         Paquete paqueteActual = listadoDePaquetes.get(index);
         for(Camion c: camiones){
-            if(paqueteActual.getPeso() <= c.getCapacidadMaxima()){
+            if(!c.contienePaquete(paqueteActual) && paqueteActual.getPeso() <= c.getCapacidadMaxima()){
                 if(paqueteActual.isContieneAlimentos()){
                     if(c.isEstaRefrigerado()){
                         c.asignarPaquete(paqueteActual);
                         c.setCapacidadMaxima(c.getCapacidadMaxima() - paqueteActual.getPeso());
                         solucionBacktracking(index+1, mejorSolucion, listadoDePaquetes, pesoNoAsignado);
 
-                        c.eliminarUltimoPaqueteAsignado();
+                        c.eliminarPaqueteAsignado(paqueteActual);
                         c.setCapacidadMaxima(c.getCapacidadMaxima() + paqueteActual.getPeso());
                     }
                 }
@@ -214,11 +222,12 @@ public class Servicios {
                     c.setCapacidadMaxima(c.getCapacidadMaxima() - paqueteActual.getPeso());
                     solucionBacktracking(index+1, mejorSolucion, listadoDePaquetes, pesoNoAsignado);
 
-                    c.eliminarUltimoPaqueteAsignado();
+                    c.eliminarPaqueteAsignado(paqueteActual);
                     c.setCapacidadMaxima(c.getCapacidadMaxima() + paqueteActual.getPeso());
                 }
             }
         }
+        //si el paquete no se pudo asignar a ningun camion, se suma su peso no asignado y se sigue al siguiente paquete
         solucionBacktracking(index+1, mejorSolucion, listadoDePaquetes, pesoNoAsignado + paqueteActual.getPeso());
         return mejorSolucion;
     }

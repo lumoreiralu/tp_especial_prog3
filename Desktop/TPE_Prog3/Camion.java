@@ -30,9 +30,9 @@ public class Camion{
         this.paquetesAsignados.add(paquete);
     }
 
-    public void eliminarUltimoPaqueteAsignado(){
-        if(!paquetesAsignados.isEmpty()){
-            this.paquetesAsignados.remove(paquetesAsignados.size() - 1);
+    public void eliminarPaqueteAsignado(Paquete paquete){
+        if(this.paquetesAsignados.contains(paquete)){
+            this.paquetesAsignados.remove(paquete);
         }
     }
 
@@ -66,6 +66,10 @@ public class Camion{
 
     public List<Paquete> getPaquetesAsignados() {
         return paquetesAsignados;
+    }
+
+    public boolean contienePaquete(Paquete paquete){
+        return this.paquetesAsignados.contains(paquete);
     }
 
     @Override

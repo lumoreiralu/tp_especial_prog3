@@ -1,10 +1,11 @@
+import java.util.List;
 
 public class Main {
     public static void main(String[] args) {
-        /* 
+        
         LectorPaquete lectorPaquetes = new LectorPaquete();
         LectorCamion lectorCamiones = new LectorCamion();
-
+        
        
         List<Paquete> paquetes = lectorPaquetes.leerArchivo("Paquete.csv");
         List<Camion> camiones = lectorCamiones.leerArchivo("Camion.csv");
@@ -18,7 +19,7 @@ public class Main {
         System.out.println("\nPaquetes cargados: " + paquetes.size());
         for (Paquete paq : paquetes) {
             System.out.println("Codigo: " + paq.getCodigoIdentificador() + " | Contiene Alimento: " + paq.isContieneAlimentos());
-        }*/
+        }
         
             // Definimos las rutas a tus archivos CSV
             String pathCamiones = "Camion.csv";
